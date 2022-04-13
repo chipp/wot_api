@@ -3,6 +3,7 @@ use hyper::{
     Server,
 };
 use log::info;
+use std::str::FromStr;
 use wot_api::{service, ErasedError, Result};
 
 #[tokio::main]
@@ -13,7 +14,13 @@ async fn main() -> Result<()> {
         Ok::<_, ErasedError>(service_fn(move |req| async move { service(req).await }))
     });
 
-    let addr = ([0, 0, 0, 0], 8080).into();
+    let port = if let Ok(port) = std::env::var("PORT") {
+        u16::from_str(&port).unwrap()
+    } else {
+        8080
+    };
+
+    let addr = ([0, 0, 0, 0], port).into();
     let server = Server::bind(&addr).serve(make_svc);
 
     info!("Listening http://{}", addr);
