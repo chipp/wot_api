@@ -1,0 +1,19 @@
+version: "3"
+services:
+  wot_api:
+    build: .
+    image: ghcr.io/chipp/wot_api:latest
+    expose:
+      - 8080
+    entrypoint: ["./wot_api"]
+    environment:
+      - RUST_LOG=info
+      - VIRTUAL_HOST=wot.api.chipp.dev
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=wot.api.chipp.dev
+      - LETSENCRYPT_EMAIL=wot.api@chipp.dev
+    restart: unless-stopped
+networks:
+  default:
+    external:
+      name: nginxproxy_default
